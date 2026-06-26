@@ -32,22 +32,14 @@ confirmation.
 
 ## Limitations
 
-This probably only works with OpenSSH. The options used by `entire-ssh`
-(`ControlMaster`, `ControlPath`, `ControlPersist`, and `%C`) are OpenSSH
-features, so other SSH clients may ignore them or fail with an unsupported option
-error. It also depends on being able to create a private control socket directory
-under `$XDG_RUNTIME_DIR` or `/tmp`.
-
-Other potential limitations:
-
-- It assumes a Unix-like environment with `bash`, `id`, `mkdir`, `chmod`, Unix
-  domain sockets, and an `ssh` binary that understands OpenSSH options. It is not
-  intended for PuTTY/plink-style SSH clients or minimal environments that do not
-  provide those tools.
-- It does not remove the need for the first SSH connection to authenticate or
-  accept host keys. If the first connection needs a passphrase, hardware-key
-  touch, host-key confirmation, or other prompt, Git can still block waiting for
-  that interaction.
+- This probably only works with OpenSSH. The options used by `entire-ssh`
+  (`ControlMaster`, `ControlPath`, `ControlPersist`, and `%C`) are OpenSSH
+  features, so other SSH clients may ignore them or fail with an unsupported option
+  error. It also depends on being able to create a private control socket directory
+  under `$XDG_RUNTIME_DIR` or `/tmp`.
+- Potential race-condition: if the `git push` from `entire`'s hook runs too early,
+  the SSH connection might not be ready yet. This is probably solvable by checking
+  whether the connection is ready to be used before using `git push`.
 - Reused connections inherit the master connection's authentication and SSH
   session settings for the same user, host, and port. If two Git operations need
   to reach the same destination with different identities, certificates, agent
