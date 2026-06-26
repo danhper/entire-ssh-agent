@@ -1,0 +1,1 @@
+Explain in the README how the entire-ssh command works and why it helps with the pre-push hook that pushes the entire checkpoint branch. Also explain the limitations: this probably only works with openssh
