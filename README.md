@@ -37,3 +37,28 @@ This probably only works with OpenSSH. The options used by `entire-ssh`
 features, so other SSH clients may ignore them or fail with an unsupported option
 error. It also depends on being able to create a private control socket directory
 under `$XDG_RUNTIME_DIR` or `/tmp`.
+
+Other potential limitations:
+
+- It assumes a Unix-like environment with `bash`, `id`, `mkdir`, `chmod`, Unix
+  domain sockets, and an `ssh` binary that understands OpenSSH options. It is not
+  intended for PuTTY/plink-style SSH clients or minimal environments that do not
+  provide those tools.
+- It does not remove the need for the first SSH connection to authenticate or
+  accept host keys. If the first connection needs a passphrase, hardware-key
+  touch, host-key confirmation, or other prompt, Git can still block waiting for
+  that interaction.
+- Reused connections inherit the master connection's authentication and SSH
+  session settings for the same user, host, and port. If two Git operations need
+  to reach the same destination with different identities, certificates, agent
+  configuration, forwarding settings, or other connection-level options, the
+  later command may reuse the earlier master instead of applying its own
+  settings.
+- Multiplexed Git commands still depend on the server accepting additional
+  sessions over the existing SSH connection. Servers with restrictive `MaxSessions`
+  settings, forced-command setups, or unusual Git hosting policies may reject
+  additional sessions even though the local control socket exists.
+- The master connection can outlive the Git command for up to `ControlPersist`.
+  That is intentional, but it means a broken network connection or abruptly
+  killed process can leave a stale control socket until OpenSSH notices and
+  reconnects or the runtime directory is cleaned up.
