@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+uid="$(id -u)"
+root="${XDG_RUNTIME_DIR:-/tmp}/entire-ssh-$uid"
+
+mkdir -p "$root"
+chmod 700 "$root"
+
+exec ssh \
+  -o ControlMaster=auto \
+  -o "ControlPath=$root/%C" \
+  -o ControlPersist=120s \
+  "$@"
