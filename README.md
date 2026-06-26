@@ -40,6 +40,7 @@ confirmation.
 - Potential race-condition: if the `git push` from `entire`'s hook runs too early,
   the SSH connection might not be ready yet. This is probably solvable by checking
   whether the connection is ready to be used before using `git push`.
+  For testing purposes, adding `sleep 1` to the prepush hook seems to have done the job.
 - Reused connections inherit the master connection's authentication and SSH
   session settings for the same user, host, and port. If two Git operations need
   to reach the same destination with different identities, certificates, agent
